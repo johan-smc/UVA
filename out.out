@@ -1,22 +1,10 @@
-0
-1
-9
-9
-8
-5
-5
-6
-5
-10
-9
-9
-6
-4
-5
-3
-3
-7
-7
-8
-3
-2
+Case 1. Increasing (64). Decreasing (48).
+Case 2. Increasing (99). Decreasing (65).
+Case 3. Increasing (98). Decreasing (63).
+Case 4. Decreasing (96). Increasing (94).
+Case 5. Increasing (98). Decreasing (68).
+Case 6. Increasing (94). Decreasing (66).
+Case 7. Increasing (93). Decreasing (83).
+Case 8. Increasing (90). Decreasing (74).
+Case 9. Increasing (90). Decreasing (72).
+Case 10. Increasing (87). Decreasing (70).
