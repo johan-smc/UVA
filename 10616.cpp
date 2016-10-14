@@ -1,25 +1,27 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
+#include <map>
 
 
 using namespace std;
-int res[205][20105][11] ;
+#define ll long long
+#define CC 20
+ll res[205][43][11] ;
+typedef pair< int , int > ii ;
 
-int dp( int* arr , const int& n , int d  , int pos , int sum , int lm )
+ll dp( int* arr , const int& n , int d  , ll pos , ll sum , ll lm )
 {
-  if( pos == n )
-    return res[ pos ][ sum ][ lm ] = 0;
-  if( res[ pos ][ sum ][ lm ] != -1  )
-    return res[ pos ][ sum ][ lm ];
   if( lm == 0 )
-  {
-    return res[ pos ][ sum ][ lm ] = ( sum % d == 0 )? 1 : 0 ;
-  }
-  int s=0;
-  s += dp( arr , n , d , pos+1 , sum+arr[pos] , lm-1  );
-  s += dp( arr , n , d , pos+1 , sum , lm );
-  return res[ pos ][ sum ][ lm ] = s ;
+     return res[ pos ][ sum + CC ][ lm ] = ( sum % d == 0 )? 1 : 0 ;
+  if( pos == n )
+    return res[ pos ][ sum + CC ][ lm ] = 0;
+  if( res[ pos ][ sum + CC ][ lm ] != -1  )
+    return res[ pos ][ sum + CC ][ lm ];
+  ll s=0;
+  s += dp( arr , n , d , pos + 1 ,  ( ( sum % d )  + ( arr[pos] % d ) ) % d , lm - 1  );
+  s += dp( arr , n , d , pos + 1 , sum , lm  );
+  return res[ pos ][ sum + CC ][ lm ] = s ;
 }
 
 int main()
@@ -38,7 +40,8 @@ int main()
     {
       scanf("%d %d", &d , &m );
       memset( res , -1 , sizeof res );
-      printf("QUERY %d: %d\n", i+1 , dp(arr,n,d,0,0,m) );
+      // map<  ii , int > res;
+      printf("QUERY %d: %lld\n", i+1 , dp( arr , n , d , 0 , 0 , m  ) );
     }
   }
   return 0;
