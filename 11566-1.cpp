@@ -1,46 +1,48 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
-#include <algorithm>
 #include <cmath>
 
 using namespace std;
 
-int dp[12][1200];
-int tea[12][105];
-int cost[105];
-int n,x,t,k;
+int n,x,t,k,lim,CC;
+int favour[ 105 ], cost[ 105 ];
+int dp[ 105 ][ 1200 ];
 
-double formula( double tot ){ return round(( tot + ( ( n + 1 )*t ))*1.1);}
-
-int buy( int pos , int f )
+int buy( int tea, int  f )
 {
-  if( pos == n+1 ){
-    // cout << "llegue " << endl;
-    return  0;
-  }
-  if( dp[ pos ][ f ] != -1 )
-    return dp[ pos ][ f ];
-  int may = 0 ;
-  for( int i = 0 ; i < k ; ++i )
-  {
-    may = max ( may , (f - cost[i] >= 0 ) ? buy( pos +1 , f - cost[i] ) + tea[pos][i] : -1  );
-  }
-  return dp[pos][f] =  may;
+  // cout << tea << " " << f << endl;
+  if( tea == n+1 )
+    return 0;
+  if( dp[ tea ][ f ] != -1 )
+    return dp[ tea ][ f ];
+  int n0,n1,n2;
+  n0 = buy( tea + 1 , f );
+  n1 = ceil((f+(cost[tea])+CC)*0.1)+(f+(cost[tea])) <= lim ? buy( tea + 1 , f + (cost[tea]) ) + favour[ tea ] : 0;
+  n2 = ceil((f+(cost[tea]*2+CC))*0.1)+(f+(cost[tea])*2) <= lim  ? buy( tea + 1 , f + (cost[tea]*2) ) + favour[ tea ] * 2 : 0;
+  return dp[ tea ][ f ] = max( n0 , max( n1 , n2 ) );
 }
 
 int main()
 {
-  while( scanf("%d %d %d %d",&n,&x,&t,&k) , (n || x  || t  || k ) )
+      int sum = 0 ;
+  while( scanf("%d %d %d %d",&n,&x,&t,&k) , (n||x||t||k) )
   {
     for( int i = 0 ; i < k ; ++i )
     {
-      scanf("%d", &cost[i] );
-      for( int j  = 0 ; j < n+1 ; ++j )
-        scanf("%d", &tea[j][i] );
+      scanf("%d",&cost[i]);
+      favour[ i ] = 0 ;
+      for( int j = 0  ; j < n + 1 ; ++j  )
+      {
+        scanf( "%d" , &sum );
+        favour[ i ] += sum;
+      }
     }
+    lim = ((n+1)*x)-((n+1)*t);
+    CC  = ((n+1)*t);
+    // cout << lim << endl;
     memset( dp , -1 , sizeof dp );
-    printf("%.2lf\n", formula( (double)buy(0, x * (n+1) ) )/(double)(n+1) );
+    printf( "%.2lf\n", (double)buy(0, 0 )/(double)(n+1) );
   }
   return 0;
 }
