@@ -7,21 +7,23 @@ using namespace std;
 
 int n,x,t,k,CC,lim;
 int favour[ 105 ], cost[ 105 ];
-int dp[ 105 ][ 1200 ];
+int dp[ 105 ][ 1200 ][ 23  ];
 
-int buy( int tea, int  f  )
+int buy( int tea, int  f  , int llevo )
 {
   if( tea == k )
     return 0;
-  if( dp[ tea ][ f ] != -1 )
-    return dp[ tea ][ f ];
+  if( dp[ tea ][ f ][ llevo ] != -1 )
+    return dp[ tea ][ f ][ llevo ];
   int n0,n1,n2;
-  n0 = buy( tea + 1 , f  );
-  n1 = ceil((f+(cost[tea])+CC)*0.1)+(f+(cost[tea])) <= lim ? buy( tea + 1 , f + (cost[tea]) ) + favour[ tea ] : 0;
-  n2 = ceil((f+((cost[tea]*2)+CC))*0.1)+(f+(cost[tea])*2) <= lim  ? buy( tea + 1 , f + (cost[tea]*2)  ) + (favour[ tea ] * 2) : 0;
-  cout  << ".... "  << ceil((f+(cost[tea])+CC)*0.1)+(f+(cost[tea])) << " ";
-  cout << tea << " " << f  << " " << max( n0 , max( n1 , n2 ) ) <<  endl;
-  return dp[ tea ][ f ] = max( n0 , max( n1 , n2 ) );
+  n0 = buy( tea + 1 , f  , llevo );
+  // n1 = ceil((f+(cost[tea])+CC)*0.1)+(f+(cost[tea])) <= lim ? buy( tea + 1 , f + (cost[tea]) ) + favour[ tea ] : 0;
+  // n2 = ceil((f+((cost[tea]*2)+CC))*0.1)+(f+(cost[tea])*2) <= lim  ? buy( tea + 1 , f + (cost[tea]*2)  ) + (favour[ tea ] * 2) : 0;
+  n1 = f+cost[ tea ] <= lim && llevo -1 >= 0 ? buy( tea + 1 , f + cost[ tea ] , llevo - 1  ) + favour[ tea ] : 0;
+  n2 = f+cost[ tea ]*2 <= lim && llevo - 2 >= 0? buy( tea + 1 , f + cost[ tea ]*2 , llevo - 2 ) + favour[ tea ]*2 : 0;
+  // cout  << ".... "  << ceil((f+(cost[tea])+CC)*0.1)+(f+(cost[tea])) << " ";
+  // cout << tea << " " << f  << " " << max( n0 , max( n1 , n2 ) ) <<  endl;
+  return dp[ tea ][ f ][ llevo ] = max( n0 , max( n1 , n2 ) );
 }
 
 int main()
@@ -38,13 +40,15 @@ int main()
         scanf( "%d" , &sum );
         favour[ i ] += sum;
       }
+      // cout << i << " " << favour[ i ] << endl;
     }
-    lim = ((n+1)*x)-((n+1)*t);
-    CC  = ((n+1)*t);
-    cout << lim << endl;
+    // lim = ((n+1)*x)-((n+1)*t);
+    lim = floor(double(x * (n + 1)) / 1.1 + 1e-6) - (n + 1) * t;
+    CC  = ((n+1)*2);
+    // cout << lim << endl;
     memset( dp , -1 , sizeof dp );
     // cout << buy( 0 , 0 , 0 ) << " " << n+1 << endl;
-    printf( "%.2lf\n", (double)buy( 0 , 0 )/(double)(n+1) );
+    printf( "%.2lf\n", (double)buy( 0 , 0 , CC )/(double)(n+1) );
   }
   return 0;
 }
