@@ -19,10 +19,10 @@ int dp[ MAX ][ BIT ];
 int travel( int pos , int bitMask )
 {
   // cout << pos << " " << bitMask << endl;
-  if( pos == n+1 )
-    return INF;
   if( bitMask == complete )
     return cost[ pos ][ 0 ];
+  if( pos == n+1 )
+    return INF;
   if( dp[ pos ][ bitMask ] != -1 )
     return dp[ pos ][ bitMask ];
   int men = INF;
@@ -31,6 +31,7 @@ int travel( int pos , int bitMask )
   {
     if( !(bitMask & (1<<i)) && i != pos )
       men = min ( men , travel( i , bitMask | (1<<i) )+cost[ pos ][ i ] );
+    // cout << pos << " " << bitMask << " " <<  i << " " << men << endl;
   }
   return dp[ pos ][ bitMask ] = men;
 }
@@ -41,7 +42,7 @@ int main()
   scanf("%d",&t);
   while( t-- )
   {
-    scanf("%d %d %d %d",&x,&y,&points[ 0 ].second,&points[ 0 ].second);
+    scanf("%d %d %d %d",&x,&y,&points[ 0 ].first,&points[ 0 ].second);
     scanf("%d",&n );
     for( int i = 1 ; i <= n ; ++i )
       scanf("%d %d",&points[ i ].first ,&points[ i ].second  );
@@ -50,12 +51,12 @@ int main()
       for( int j = 0 ; j < n+1 ; ++j )
       {
         cost[ i ][ j ] = abs (  points[ i ].first - points[ j ].first ) + abs ( points[ i ].second - points[ j ].second );
-        cout << cost[ i ][ j ] << " ";
+        // cout << cost[ i ][ j ] << " " << points[ i ].first << " - " << points[ j ].first << "  " << points[ i ].second << " - " << points[ j ].second << endl;
       }
-      cout << endl;
+      // cout << endl;
     }
     memset( dp , -1 , sizeof dp );
-    complete = (1<<(n+1))-1;
+    complete = ( 1<<(n+1) )-1;
     int tot = travel ( 0 , 1 );
     printf("The shortest path has length %d\n",tot );
   }
