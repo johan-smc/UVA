@@ -1,9 +1,29 @@
-**********************************************************
-Network #1
-Cable requirement to connect (127,56) to (32,89) is 116.57 feet.
-Cable requirement to connect (32,89) to (43,105) is 35.42 feet.
-Cable requirement to connect (43,105) to (56,108) is 29.34 feet.
-Cable requirement to connect (56,108) to (54,135) is 43.07 feet.
-Cable requirement to connect (54,135) to (29,132) is 41.18 feet.
-Cable requirement to connect (29,132) to (30,146) is 30.04 feet.
-Number of feet of cable required is 295.62.
+Ben 0 0
+Alexander 1 0
+Dolly 2 0
+Benedict 3 0
+Aaron 4 4
+Calling circles for data set 1:
+Ben, Alexander, Dolly, Benedict
+Aaron
+
+John 0 0
+Aaron 1 1
+Benedict 2 2
+Betsy 11 0
+Ringo 12 0
+Dolly 13 12
+Paul 3 3
+George 8 3
+Martha 4 3
+Ben 9 3
+Alexander 7 3
+Stephen 5 3
+Quincy 6 4
+Patrick 10 3
+Calling circles for data set 2:
+John
+Aaron
+Benedict
+Paul, Martha, Stephen, Quincy, Alexander, George, Ben, Patrick, Betsy, Ringo, Dolly
+
