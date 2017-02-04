@@ -3,10 +3,13 @@
 #include <cstring>
 #include <algorithm>
 
+
+
 using namespace std;
 #define MAX 1001
 
 int coins[ MAX ];
+
 double pas[ MAX ];
 int n;
 int pos;
@@ -20,6 +23,8 @@ int withdraw( int X )
   return   withdraw( X - coins[ Y ] ) + sum ;
   // return   withdraw( X - coins[ Y ] ) + 1 ;
 }
+
+int n;
 
 int main()
 {
@@ -63,6 +68,7 @@ int main()
     pos = n-1;
     // printf("sum = %d sum2 = %d \n",sum,sum2 );
     printf("%d\n", withdraw( sum )  );
+
   }
   return 0;
 }

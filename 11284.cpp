@@ -7,7 +7,7 @@
 using namespace std;
 #define MAX 52
 #define INF 1<<21
-#define BIT 1<<12
+#define BIT 1<<13
 
 
 int END;
@@ -17,7 +17,7 @@ double c;
 double matAd[ MAX ][ MAX ];
 double dp[ MAX ][ BIT ];
 bool vdp[ MAX ][ BIT ];
-//double cost[ MAX ];
+double cost[ MAX ];
 int ind[ MAX ];
 
 void floyd()
@@ -30,7 +30,7 @@ void floyd()
 
 double travel( int pos , int bitMask )
 {
-  if( bitMask  == END )
+  if( bitMask  == 0 )
     return matAd[ pos ][ 0 ];
   if( vdp[ pos ][ bitMask ]  ){
     // cout << "ya habia pasado " << dp[ pos ][ bitMask ] << endl;
@@ -39,14 +39,16 @@ double travel( int pos , int bitMask )
   double men = INF ;
   for( int i  = 1 ; i < n+1 ; ++i )
   {
-    if(  (ind[ i ]==-1?0:!(bitMask&(1<<ind[i]))) && i != pos )
+  // cout <<"nnn "<< i << " " << ind[ i ] << " " << (ind[ i ]==-1?0:(bitMask&(1<<ind[i])))  << " p " <<pos << endl;
+    if(  (ind[ i ]==-1?0:(bitMask&(1<<ind[i]))) && i != pos )
     {
+
       // cout << "vo " << pos << " a " << i << " " << men << endl;
       // cout << "vo " << pos << " a " << i << " " << men << " " << ((ind[ i ] != -1 )?(bitMask|(1<<ind[i])):bitMask) << endl;
-      men = min( men , travel( i , ((ind[ i ] != -1 )?(bitMask|(1<<ind[i])):bitMask) ) + matAd[ pos ][ i ] );
+      men = min( men , travel( i , ((ind[ i ] != -1 )?(bitMask&(~(1<<ind[i]))):bitMask) ) + matAd[ pos ][ i ] );
     }
   }
-  // cout << men << endl;
+  // cout << "en " << pos << " " << bitMask << " el menor es " << men << endl;
   vdp[ pos ][ bitMask ] = 1;
   return dp[ pos ][ bitMask ] = men ;
 
@@ -54,6 +56,7 @@ double travel( int pos , int bitMask )
 
 int main()
 {
+  double temp;
   scanf("%d",&t);
   while( t-- )
   {
@@ -67,6 +70,7 @@ int main()
     for( int i = 0 ; i < m ; ++i )
     {
       scanf("%d %d %lf",&a,&b,&c );
+      // cout << " entro " <<  a << " " << b << " " << c << endl;
       matAd[ a ][ b ] = min( matAd[ a ][ b ] , c );
       matAd[ b ][ a ] = min( matAd[ b ][ a ] , c );
     }
@@ -76,9 +80,8 @@ int main()
     for( int i = 0 ; i < p ; ++i )
     {
       scanf("%d %lf",&a,&c );
-    //  cost[ a ] = c;
-      des += c;
-      END |= (1<<i);
+     cost[ i ] = c;
+
       ind[ a ] = i;
     }
     floyd();
@@ -88,12 +91,23 @@ int main()
     //     cout << matAd[ i ][ j ] << " ";
     //   cout << endl;
     // }
-    double res = travel( 0 , 0 );
-    cout << res << " " << des << endl;
-    if( des - res < 0 )
-      printf("Don’t leave the house\n");
+    double res = -INF ;
+    for( END = 1 ; END < (1 << p) ; ++END )
+    {
+      des = 0;
+      for( int i = 0 ; i < p ; ++i )
+      {
+        if( (1<<i)&END )
+          des += cost[ i  ];
+      }
+       temp =  travel( 0 , END ) ;
+      //  cout << temp << " " << des << endl;
+      res = max( des - temp ,res);
+    }
+    if( res < 0.005 )
+      printf("Don't leave the house\n");
     else
-      printf("Daniel can save $%.2lf\n", des - res );
+      printf("Daniel can save $%.2lf\n", res);
   }
   return 0;
 }

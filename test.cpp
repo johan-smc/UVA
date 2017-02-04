@@ -8,9 +8,8 @@ using namespace std;
 
 int main()
 {
-  // printf("%.30lf\n",pow(256,1.0/3.0) );
-  int a,b;
-  scanf("%d (%d)",&a,&b );
-  printf("%d %d",a,b );
+
+  // printf("%d %d %d %d\n",1,~1,1&(~1),3&(~1) );
+  printf("%d\n",(int)1e6 );
   return 0;
 }
