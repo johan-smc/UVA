@@ -2,111 +2,130 @@
 #include <cstdio>
 #include <cstring>
 #include <vector>
-#include <map>
-#include <set>
-#include <queue>
-#include <stack>
 #include <bitset>
+#include <map>
 
 using namespace std;
-#define MAX 30
+#define MAX 26
 #define UNVISITED -1
 
-std::vector< std::vector<int> > graph;
-std::vector<int> S;
-int dfs_num[ MAX ] , dfs_low[ MAX ], dfsCont;
+int dfsNum,oNum;
+int dfs_low[ MAX ], dfs_num[ MAX ];
+int otherGraph[ MAX ];
+
 bitset< MAX > visited;
-queue< stack < int > > res;
+std::vector<int> S;
+string names[ MAX ];
+std::vector< std::vector<int> > graph;
+ std::vector< std::vector<int>  >  res;
 
 void tarjanSCC( int u )
 {
-  dfs_num[ u ] = dfs_low[ u ] = dfsCont++;
-  visited[ u ] = 1;
+  dfs_low[ u ]  = dfs_num[ u ] = dfsNum++;
   S.push_back( u );
-  for( int i = 0 ; i < graph[ u ].size( ) ; ++i )
+  visited[ u ] = 1;
+  for( int i = 0 ; i < graph[ u ].size() ; ++i )
   {
     int v = graph[ u ][ i ];
-    // cout << "jajaj "<< u << " " << v << endl;
     if( dfs_num[ v ] == UNVISITED )
       tarjanSCC( v );
-      // cout << "jaj" << endl;
-    if( visited[v] )
-      dfs_low[ u ]  = min( dfs_low[ u ] , dfs_low[ v ] );
+    if( visited[ v ] )
+      dfs_low[ u ] = min( dfs_low[ u ], dfs_low[ v ] );
   }
   if( dfs_low[ u ] == dfs_num[ u ] )
   {
-    stack s;
+    res.push_back(std::vector<int>());
     while( 1 )
     {
-      int v = S.back();
-      S.pop_back();
-      s.push(v);
-      if( u == v) break;
+      int v = S.back(); S.pop_back();
+      cout << v << " " ;
+      res[ oNum ].push_back( v );
+      otherGraph[ v ] = oNum;
+      visited[ v ] = 0 ;
+      if( u == v ) break;
     }
-    res.puhs(s);
+    cout << endl;
+    ++oNum;
   }
 }
 
 int main()
 {
-  int n,m,c=0;
-  while( cin >> n >> m  , (n||m) )
+  int n,m,c;
+  c = 0;
+  while( cin >> n >> m , (n||m) )
   {
-    set< pair< string, string > > rep;
+    if( c != 0 )
+      cout << "\n";
+    int num ;
+    map< string , int > mp;
+    graph.assign( n , std::vector<int>());
     visited.reset();
     res.clear();
-    int cont = dfsCont = 0 ;
-    graph.assign( n , std::vector<int>() );
     S.clear();
-    memset( dfs_num , UNVISITED , sizeof dfs_num );
-    memset( dfs_low , 0 , sizeof dfs_low );
-    map< string , int > mp;
-    std::vector< string > names;
-    string a,b;
-    for( int i = 0 ; i < m ; ++i  )
-    {
-      cin >> a >> b;
-      if( rep.find( make_pair( a,b ) ) != rep.end() )
-        continue;
-      if( mp.find(a) == mp.end() )
+    memset( dfs_low , -1 , sizeof dfs_low );
+    memset( dfs_num , -1 , sizeof dfs_num );
+    memset( otherGraph , -1 , sizeof otherGraph );
+      num = oNum = dfsNum = 0;
+      string a,b;
+      for( int i = 0 ; i < m ; ++i )
       {
-        mp[ a ] = cont++;
-        names.push_back( a );
-      }
-      if( mp.find(b) == mp.end() )
-      {
-        mp[ b ] = cont++;
-        names.push_back( b );
-      }
-      graph[ mp[a] ].push_back( mp[b] );
-    }
-    // cout << " fsda----------" << endl;
-    for( int i = 0 ; i < n ; ++i )
-      if( dfs_num[ i ] == UNVISITED )
-        tarjanSCC( i );
-    // cout << " fsda f" << endl;
-    // for( int i = 0 ; i < n ; ++i )
-    // {
-    //   cout << names[ i ] << " "<< dfs_num[ i ] << " " << dfs_low[ i ] << endl;
-    // }
-    while( !res.empty() )
-    {
-      stack< int > s = res.front();
-      res.pop();
-      while( !s.empty() )
-      {
-        int t = s.top();
-        s.pop();
-	cout << t;
-	if( !s.empty() )
-		cout << " , ";
-      }
-	cout << endl;
-    }
+        cin >> a >> b;
+        if( mp.find( a ) == mp.end() )
+        {
+          names[ num ] = a;
+          mp[ a ] = num++;
+        }
+        if( mp.find( b ) == mp.end() )
+        {
 
-    cout << "Calling circles for data set " << ++c << ":" << endl;
+          names[ num ] = b;
+          mp[ b ] = num++;
+        }
+        graph[ mp[ a ] ].push_back( mp[ b ] );
+      }
+      // cout << num << endl;
+      for( int i = 0 ; i < n ; ++i )
+        if( !visited[ i ] )
+          tarjanSCC( i );
+      // for( int i = 0 ; i < S.size() ; ++i )
+      //     cout << S[ i ] << " ";
+      // cout << endl;
+      std::vector<int> temp(1);
 
-    cout << "\n\n" ;
+      for( int i = 0; i < n ; ++i )
+        if( otherGraph[ i ] == -1 )
+        {
+          temp[0] = i;
+          res.push_back( temp );
+          otherGraph[ i ] = oNum++;
+        }
+
+          // cout << "hi\n";
+      for( int i = 0 ; i <  n; ++i )
+        cout << otherGraph[ i ] << " ";
+      cout << "Calling circles for data set " << ++c << ":\n";
+      int nn;
+      for( int i = 0 ; i <  n ; ++i )
+      {
+          if( otherGraph[ i ] != -1 )
+          {
+            int now = otherGraph[ i ];
+            // cout << now << " " << res[ now ].size() << endl;
+            for( int j = 0 ; j < res[ now ].size() ; ++j )
+            {
+              nn = res[ now ][ j ];
+              otherGraph[ nn ] = -1;
+              if( j != 0 )
+                cout << ", ";
+              cout << names[ nn ] ;
+            }
+            cout << "\n";
+
+          }
+      }
+
+
   }
   return 0;
 }
