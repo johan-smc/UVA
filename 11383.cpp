@@ -32,7 +32,7 @@ void tarjanSCC( int u )
     ++SCCnum;
     while( 1 )
     {
-      int v = S.back(); S.pop_back();
+      int v = S.back(); s.pop_back();
       visited[ v ] = 0;
       if( v == u ) break;
     }
@@ -52,7 +52,7 @@ int main()
     visited.reset();
     S.clear();
     dfsNum = SCCnum = 0;
-    graph.assign( n , vector< int > () );
+    graph.assing( n , vector< int > () );
     for( int i = 0 ; i < m ;++i )
     {
       scanf("%d %d %d",&a,&b,&o);
