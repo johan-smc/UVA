@@ -22,6 +22,7 @@ std::vector< std::vector<int> > graph;
 void tarjanSCC( int u )
 {
   dfs_low[ u ]  = dfs_num[ u ] = dfsNum++;
+  // cout << "ii " << u << endl;
   S.push_back( u );
   visited[ u ] = 1;
   for( int i = 0 ; i < graph[ u ].size() ; ++i )
@@ -35,16 +36,18 @@ void tarjanSCC( int u )
   if( dfs_low[ u ] == dfs_num[ u ] )
   {
     res.push_back(std::vector<int>());
+    // cout << "ci " << u << " oNum " << oNum << " sS " << S.size() << endl;
     while( 1 )
     {
+      // cout << " pri " << S.size() << " " ;
       int v = S.back(); S.pop_back();
-      cout << v << " " ;
+      // cout << v << " s= " << S.size()  << " " ;
       res[ oNum ].push_back( v );
       otherGraph[ v ] = oNum;
       visited[ v ] = 0 ;
       if( u == v ) break;
     }
-    cout << endl;
+    // cout << endl;
     ++oNum;
   }
 }
@@ -86,7 +89,7 @@ int main()
       }
       // cout << num << endl;
       for( int i = 0 ; i < n ; ++i )
-        if( !visited[ i ] )
+        if( dfs_num[ i ] == UNVISITED )
           tarjanSCC( i );
       // for( int i = 0 ; i < S.size() ; ++i )
       //     cout << S[ i ] << " ";
@@ -102,8 +105,8 @@ int main()
         }
 
           // cout << "hi\n";
-      for( int i = 0 ; i <  n; ++i )
-        cout << otherGraph[ i ] << " ";
+      // for( int i = 0 ; i <  n; ++i )
+      //   cout << otherGraph[ i ] << " ";
       cout << "Calling circles for data set " << ++c << ":\n";
       int nn;
       for( int i = 0 ; i <  n ; ++i )
