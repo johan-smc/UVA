@@ -1,60 +1,93 @@
-#include <iostream>
-#include <cstdio>
-#include <bitset>
-#include <cstring>
-#include <vector>
-#include <queue>
-
+#include <bits/stdc++.h>
 
 using namespace std;
+vector<vector<int> > g;
+vector<int> cost;
+const int MAX_NODES = 150;
+int p[MAX_NODES], bottleneck;
+bitset<MAX_NODES> visited;
+int nodes, f[MAX_NODES][MAX_NODES];
 
-vector< vector< int > > graph;
-int now,nex;
-
-bool bfs( int n )
-{
-  queue< int > q;
-  bitset< 2003 > pas;
-  pas[ n ] = 1 ;
-  q.push( n );
-  while( !q.empty() )
-  {
-    now = q.front();q.pop();
-    for( int i = 0 ; i < graph[ now ].size() ; ++i )
-    {
-      nex = graph[ now ][ i ];
-      if( !pas[ nex ] ){
-        pas[ nex ] = 1;
-        q.push( nex );
-      }
-    }
-  }
-  for( int i = 0 ; i < n ; ++i )
-    if( !pas[i] )
-      return false;
-  return true;
-
+inline int out(int k) {
+    if(k == 1 || k == nodes)
+        return k;
+    return k + 60;
 }
 
-int main()
-{
-  int n,m,v,w,p;
-  while( scanf("%d %d",&n,&m) , (n||m) )
-  {
-    graph.assign(n,vector< int >());
-    for( int i = 0 ; i < m ; ++i )
-    {
-      scanf("%d %d %d",&v,&w,&p );
-      --v;
-      --w;
-      --p;
-      graph[ v ].push_back( w );
-      if( p )
-        graph[ w ].push_back( v );
+inline int in(int k) {
+    return k;
+}
+
+void path(int v) {
+    int u = p[v];
+    if(~u) {
+        bottleneck = min(bottleneck, f[u][v]);
+        path(u);
+        cout << u << " " << v << " " << f[ u ][ v ] << "\n";
+        f[u][v] -= bottleneck;
+        f[v][u] += bottleneck;
     }
-    bool is=1;
-    for( int i = 0 ; i < n && is ; is = bfs( i ) , ++i );
-    printf("%d\n",(int)is );
-  }
-  return  0;
+}
+
+bool bfs(const int s, const int t) {
+    queue<int> q;
+    q.push(s);
+    visited.reset();
+    p[s] = -1;
+    visited[s] = true;
+    while(q.size()) {
+        int u = q.front();q.pop();
+        for(const auto& v: g[u])
+            if(!visited[v] && f[u][v] > 0) {
+              cout << "GO "<<u << " " << v << "\n";
+              
+                visited[v] = true;
+                q.push(v);
+                p[v] = u;
+                if(v == t) return true;
+            }
+    }
+    return false;
+}
+
+int edmonds(const int s, const int t) {
+    int ans = 0;
+    while(bfs(s, t)) {
+        bottleneck = INT_MAX;
+        path(t);
+        ans += bottleneck;
+        cout << "ans " << ans << "\n";
+    }
+    return ans;
+}
+
+void add_edge(int u, int v, int flow) {
+    g[u].push_back(v);
+    g[v].push_back(u);
+    f[u][v] += flow;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    int edges,u,v,c;
+    cost.resize(MAX_NODES);
+    while(cin >> nodes >> edges, nodes || edges) {
+        g.assign(MAX_NODES, vector<int>());
+        memset(f, 0, sizeof f);
+        for(int i = 0; i < nodes - 2; ++i) {
+            int id;
+            cin >> id;
+            cin >> cost[id];
+        }
+        while(edges--) {
+            cin >> u >> v >> c;
+            add_edge(out(u), in(v), c);
+            add_edge(out(v), in(u), c);
+        }
+        for(int u = 2; u < nodes; ++u)
+            add_edge(in(u), out(u), cost[u]);
+        cout << edmonds(1, nodes) << '\n';
+    }
+    return 0;
 }

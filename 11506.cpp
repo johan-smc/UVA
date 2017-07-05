@@ -8,37 +8,35 @@
 using namespace std;
 
 #define MAX 200
-#define INF 1e9
+#define INF 1<<30
 #define INI 1
 #define SECOND 60
 
 vector < vector< int >  > g;
 int f[ MAX ][ MAX ];
-int cost[ MAX ][ MAX ];
 int p[ MAX ];
 bool vi[ MAX ];
 int FIN;
-set< int > con;
 
 bool bfs()
 {
-  memset( p , -1 , sizeof p );
-  queue< int > q;
+  memset( p , -1 , sizeof p  );
+  queue< int >q;
   q.push( INI );
   p[ INI ] = -2;
-  int u,v;
+  int u , v ;
   while( !q.empty() )
   {
-    u = q.front();
-    q.pop();
+    u = q.front() ; q.pop();
     if( u == FIN )
       return true;
-    for( int i = 0; i < (int)g[ u ].size() ; ++i )
+    for( int i = 0 ; i < (int)g[ u ].size() ; ++i )
     {
-      v=  g[ u ][ i ];
+      v = g[ u ][ i ];
       if( p[ v ] == -1 && f[ u ][ v ] > 0 )
       {
-        q.push( v );
+        // cout << "GO "<<u << " " << v << "\n";
+        q.push(v );
         p[ v ] = u;
       }
     }
@@ -46,162 +44,61 @@ bool bfs()
   return false;
 }
 
-int flujo()
+int flujo( )
 {
   int flow = 0;
-  while( bfs() )
+  while( bfs( ) )
   {
     int men = INF;
-    for( int now = FIN , father = p[ now ] ; father != -2 ; now = father , father = p[ now ])
+    for( int now  = FIN , father = p[ now ] ; father != -2 ; now = father , father = p[ now ] )
     {
       men = min( men , f[ father ][ now ] );
     }
-    for( int now = FIN , father = p[ now ] ; father != -2 ; now = father , father = p[ now ])
+    for( int now  = FIN , father = p[ now ] ; father != -2 ; now = father , father = p[ now ] )
     {
+      // cout << father << " " << now << " " << f[ father ][ now ] << "\n";
+
       f[ father ][ now ] -= men;
       f[ now ][ father ] += men;
     }
     flow += men;
+    // cout << " ans " << flow << "\n";
   }
   return flow;
 }
 
-void bfsa()
-{
-  con.clear();
-  memset( vi , 0 , sizeof vi );
-  queue< int > q;
-  q.push( INI );
-  vi[ INI ] = 1;
-  con.insert( INI );
-  int u , v;
-  while( !q.empty() )
-  {
-    u = q.front(); q.pop();
-    for( int i = 0 ; i < (int)g[ u ].size() ; ++i )
-    {
-      v = g[ u ][ i ];
-      if( !vi[ v ] && f[ u ][ v ] > 0 )
-      {
-        q.push( v );
-        vi[ v ] = true;
-        con.insert( v );
-      }
-    }
-  }
-}
-
-
-
-
-int bfsR( int u )
-{
-  memset( vi , 0 , sizeof vi );
-  int tot = 0 ;
-  queue< int > q;
-  q.push( u );
-  vi[ u ]  = 1;
-  int  v;
-  while( !q.empty() )
-  {
-    u = q.front(); q.pop();
-    for( int i = 0 ; i < (int)g[ u ].size() ; ++i )
-    {
-      v = g[ u ][ i ];
-      if( !vi[ v ] &&  f[ u ][ v ] == 0 && con.find( v ) == con.end() )
-      {
-        // cout << u << " " << v << "--\n";
-        tot += cost[ u ][ v ];
-        vi[ v ] = 1;
-      }
-    }
-  }
-  return tot;
-}
-
-int arist()
-{
-  bfsa();
-  set< int >::iterator it;
-  int tot = 0;
-  // cout << "INI\n";
-  for( it = con.begin() ; it != con.end() ; ++it )
-  {
-    // cout << *it << "\n";
-    tot += bfsR( *it );
-  }
-  return tot;
-}
 
 int main()
 {
-  int m ,w ;
-  int u,v,ff,uu,vv;
+  int m , w , u , v  , ff;
   while( cin >> m >> w && ( m || w ) )
   {
-    FIN = m;
+    FIN = m + SECOND;
     memset( f , 0 , sizeof f );
-    memset( cost , 0 , sizeof cost );
-    g.assign( MAX ,vector< int >() );
+    g.assign( MAX , vector< int >() );
+    g[ INI ].push_back( INI+SECOND );
+    g[ INI+SECOND ].push_back( INI );
+    f[ INI ][ INI+SECOND ] = INF;
+    g[ m ].push_back( m+SECOND );
+    g[ m+SECOND ].push_back( m );
+    f[ m ][ m+SECOND ] = INF;
     for( int i = 0; i < m-2 ; ++i )
     {
-      cin >> u >> v;
-      g[ u ].push_back( u+SECOND );
+      cin >> u >> ff;
+      g[ u ].push_back( u +SECOND );
       g[ u+SECOND ].push_back( u );
-      f[ u ][ u+SECOND ] = v;
-      cost[ u ][ u+SECOND ] = v;
-      // f[ u+SECOND ][ u ] = v;
-      // cost[ u+SECOND ][ u ] = v;
+      f[ u ][ u+SECOND ]  += ff;
     }
-    for( int i = 0 ; i < w ; ++i )
+    for( int i = 0; i < w ; ++i )
     {
-      cin >> u >> v >> ff;
-      // if( u == 1 )
-      // {
-      //   g[ u ].push_back( v );
-      //   g[ v ].push_back( u );
-      //   f[ u ][ v ] += ff;
-      //   cost[ u ][ v ] += ff;
-      //   f[ v ][ u ] += ff;
-      //   cost[ v ][ u ] += ff;
-      // }
-      // else if( v == m )
-      // {
-      //   g[ u+SECOND ].push_back( v );
-      //   g[ v ].push_back( u+SECOND );
-      //   f[ u+SECOND ][ v ] += ff;
-      //   cost[ u+SECOND ][ v ] += ff;
-      //   f[ v ][ u+SECOND ] += ff;
-      //   cost[ v ][ u+SECOND ] += ff;
-      //
-      // }
-      // else
-      // {
-      //   g[ u+SECOND ].push_back( v+SECOND );
-      //   g[ v+SECOND ].push_back( u+SECOND );
-      //   f[ u+SECOND ][ v+SECOND ] += ff;
-      //   cost[ u+SECOND ][ v+SECOND ] += ff;
-      //   f[ v+SECOND ][ u+SECOND ] += ff;
-      //   cost[ v+SECOND ][ u+SECOND ] += ff;
-      // }
-      if( u == 1 || u== m  )
-        uu = u;
-      else
-        uu = u+SECOND;
-
-      if( v == m || v == 1 )
-        vv = v;
-      else
-        vv = v+SECOND;
-      g[ uu ].push_back( v );
-      g[ vv ].push_back( u );
-      f[ uu ][ v ] += ff;
-      cost[ uu ][ v ] += ff;
-      f[ vv ][ u ] += ff;
-      cost[ vv ][ u ] += ff;
+      cin >> u >> v >>ff;
+      g[ u+SECOND ].push_back( v );
+      g[ v ].push_back( u+SECOND );
+      g[ v+SECOND ].push_back( u );
+      g[ u ].push_back( v+SECOND );
+      f[ u+SECOND ][ v ] += ff;
+      f[ v+SECOND ][ u ] += ff;
     }
-    // flujo();
-    // cout << arist() << "\n";
     cout << flujo() << "\n";
   }
   return 0;
