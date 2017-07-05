@@ -96,9 +96,11 @@ void bfsa()
 
 int bfsR( int u )
 {
+  memset( vi , 0 , sizeof vi );
   int tot = 0 ;
   queue< int > q;
   q.push( u );
+  vi[ u ]  = 1;
   int  v;
   while( !q.empty() )
   {
@@ -106,10 +108,11 @@ int bfsR( int u )
     for( int i = 0 ; i < (int)g[ u ].size() ; ++i )
     {
       v = g[ u ][ i ];
-      if(  f[ u ][ v ] == 0 && con.find( v ) == con.end() )
+      if( !vi[ v ] &&  f[ u ][ v ] == 0 && con.find( v ) == con.end() )
       {
         // cout << u << " " << v << "--\n";
         tot += cost[ u ][ v ];
+        vi[ v ] = 1;
       }
     }
   }
@@ -197,8 +200,9 @@ int main()
       f[ vv ][ u ] += ff;
       cost[ vv ][ u ] += ff;
     }
-    flujo();
-    cout << arist() << "\n";
+    // flujo();
+    // cout << arist() << "\n";
+    cout << flujo() << "\n";
   }
   return 0;
 }
